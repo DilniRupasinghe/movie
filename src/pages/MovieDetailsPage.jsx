@@ -1,7 +1,8 @@
 import React from 'react';
+import MovieDetails from '../components/MovieDetails';
 
 function MovieDetailsPage() {
-  return <div>Movie Details Page</div>;
+  return <MovieDetails />;
 }
 
 export default MovieDetailsPage;
