@@ -7,11 +7,13 @@ import Home from './pages/Home';
 import MovieDetailsPage from './pages/MovieDetailsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import Login from './pages/Login';
+import { CustomThemeProvider } from './context/ThemeContext';
 
 const App = () => {
 
   return (
-    <MovieProvider>
+    <CustomThemeProvider>
+      <MovieProvider>
         <Navbar />
         <Routes>
           <Route path="/" element={<Login />} />
@@ -20,6 +22,8 @@ const App = () => {
           <Route path="/favorites" element={<FavoritesPage />} />
         </Routes>
     </MovieProvider>
+    </CustomThemeProvider>
+    
   );
 };
 
