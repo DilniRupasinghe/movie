@@ -1,24 +1,26 @@
+// src/App.jsx
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MovieProvider } from './context/MovieContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import MovieDetailsPage from './pages/MovieDetailsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import Login from './pages/Login';
 
-function App() {
-  return (
-    <>
-      <Navbar />
+const App = () => {
 
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/movie/:id" element={<MovieDetailsPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-      </Routes>
-    </>
+  return (
+    <MovieProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<Home/>} />
+          <Route path="/movie/:id" element={<MovieDetailsPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+        </Routes>
+    </MovieProvider>
   );
-}
+};
 
 export default App;

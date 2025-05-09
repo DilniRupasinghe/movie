@@ -1,21 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { TextField, Button, Box } from '@mui/material';
-import { MovieContext } from '../context/MovieContext';
-import SearchIcon from '@mui/icons-material/Search'; // Corrected icon import
+import React, { useState } from 'react';
+import { TextField, Button, Box, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { useTheme } from '@mui/material/styles';
 
-function SearchBar() {
+function SearchBar({ onSearch }) {
   const [query, setQuery] = useState('');
-  const { setLastSearch } = useContext(MovieContext);  // Get the context for last search
+  const theme = useTheme();
 
   const handleSearch = () => {
-    if (query.trim()) {
-      setLastSearch(query);  // Save the search query in the context
-      console.log('Search for:', query);
-      // Here you can call the TMDb API to get search results, e.g.:
-      // fetchMovies(query);
-    } else {
-      console.log('Please enter a search query');
-    }
+    if (onSearch) onSearch(query);
   };
 
   return (
@@ -24,15 +17,31 @@ function SearchBar() {
         label="Search movies..."
         variant="outlined"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}  // Update the query state
-        sx={{ width: '300px', mr: 2 }}
+        onChange={(e) => setQuery(e.target.value)}
+        sx={{
+          width: '300px',
+          mr: 2,
+          backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#fff',
+          borderRadius: '4px',
+          input: { color: theme.palette.text.primary },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': { borderColor: theme.palette.divider },
+            '&:hover fieldset': { borderColor: theme.palette.text.primary },
+            '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
+          },
+        }}
+        InputLabelProps={{
+          style: { color: theme.palette.text.primary },
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon sx={{ color: theme.palette.text.primary }} />
+            </InputAdornment>
+          ),
+        }}
       />
-      <Button 
-        variant="contained" 
-        onClick={handleSearch} 
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        <SearchIcon sx={{ marginRight: 1 }} />
+      <Button variant="contained" onClick={handleSearch}>
         Search
       </Button>
     </Box>
