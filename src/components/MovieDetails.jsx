@@ -6,18 +6,20 @@ import { Typography, Box } from '@mui/material';
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=YOUR_TMDB_API_KEY&append_to_response=credits,videos`);
+        const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&append_to_response=credits,videos`);
         setMovie(res.data);
       } catch (err) {
         console.error('Error fetching movie details:', err);
       }
     };
     fetchDetails();
-  }, [id]);
+  }, [id, API_KEY]);
 
   if (!movie) return <Typography>Loading...</Typography>;
 
