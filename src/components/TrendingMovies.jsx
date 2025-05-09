@@ -1,46 +1,22 @@
 // src/components/TrendingMovies.jsx
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import { MovieContext } from '../context/MovieContext';  // ✅ Import context
 import { Box, Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';  // ✅ import InfiniteScroll
-
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-const BASE_URL = 'https://api.themoviedb.org/3';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 function TrendingMovies() {
-  const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(1);  // Track current page
-  const [hasMore, setHasMore] = useState(true);  // Track if more movies exist
-
-  const fetchMovies = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`);
-      if (response.data.results.length === 0) {
-        setHasMore(false); // No more movies to load
-      } else {
-        setMovies((prevMovies) => [...prevMovies, ...response.data.results]);
-        setPage(page + 1);  // Increment page for next fetch
-      }
-    } catch (err) {
-      console.error('Error fetching trending movies:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchMovies();  // Initial fetch on mount
-  }, []);  // Empty dependency array ensures this runs once when the component mounts
+  const { movies, setMovies, fetchMoreMovies, hasMore } = useContext(MovieContext);  // ✅ use movies from context
 
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>Trending Movies</Typography>
 
-      {/* Infinite scroll component */}
       <InfiniteScroll
-        dataLength={movies.length}  // Total number of movies
-        next={fetchMovies}  // Function to load more movies
-        hasMore={hasMore}  // Check if there are more movies to load
-        loader={<CircularProgress sx={{ margin: '20px auto' }} />}  // Loader while fetching
+        dataLength={movies.length}
+        next={fetchMoreMovies}  // ✅ use fetch from context
+        hasMore={hasMore}
+        loader={<CircularProgress sx={{ margin: '20px auto' }} />}
         endMessage={
           <Typography textAlign="center" sx={{ mt: 2 }}>
             You’ve reached the end of the list!

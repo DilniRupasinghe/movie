@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button, Box, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
+import { MovieContext } from '../context/MovieContext';  // ✅ import MovieContext
+
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 function SearchBar({ onSearch }) {
   const [query, setQuery] = useState('');
   const theme = useTheme();
 
-  const handleSearch = () => {
-    if (onSearch) onSearch(query);
+  const { setMovies, saveLastSearchedMovie } = useContext(MovieContext); // ✅ use context
+
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+
+    try {
+      const res = await axios.get(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`);
+      setMovies(res.data.results);  // ✅ update movie list in context
+      saveLastSearchedMovie(query); // ✅ save last searched query
+      if (onSearch) onSearch(query); // optional callback
+    } catch (err) {
+      console.error('Error searching movies:', err);
+    }
   };
 
   return (
@@ -39,6 +55,9 @@ function SearchBar({ onSearch }) {
               <SearchIcon sx={{ color: theme.palette.text.primary }} />
             </InputAdornment>
           ),
+        }}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') handleSearch(); // Optional: search on Enter key
         }}
       />
       <Button variant="contained" onClick={handleSearch}>
