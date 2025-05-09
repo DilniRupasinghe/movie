@@ -9,7 +9,7 @@ function Navbar() {
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
           Movie Explorer
         </Typography>
-        <Button color="inherit" component={Link} to="/">Home</Button>
+        <Button color="inherit" component={Link} to="/home">Home</Button>
         <Button color="inherit" component={Link} to="/favorites">Favorites</Button>
       </Toolbar>
     </AppBar>

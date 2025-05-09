@@ -1,35 +1,47 @@
+// src/components/MovieDetails.jsx
+
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Typography, Box } from '@mui/material';
+import { Box, Typography, Card, CardMedia, CardContent, Button } from '@mui/material';
+
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
-  const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-
 
   useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&append_to_response=credits,videos`);
+    axios
+      .get(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`)
+      .then((res) => {
         setMovie(res.data);
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error('Error fetching movie details:', err);
-      }
-    };
-    fetchDetails();
-  }, [id, API_KEY]);
+      });
+  }, [id]);
 
   if (!movie) return <Typography>Loading...</Typography>;
 
   return (
-    <Box p={2}>
-      <Typography variant="h4">{movie.title}</Typography>
-      <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
-      <Typography>{movie.overview}</Typography>
-      <Typography>Genres: {movie.genres.map(g => g.name).join(', ')}</Typography>
-      <Typography>Rating: ⭐ {movie.vote_average}</Typography>
+    <Box sx={{ padding: 4 }}>
+      <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+        <CardMedia
+          component="img"
+          sx={{ width: { xs: '100%', md: 400 }, height: 'auto' }}
+          image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+          alt={movie.title}
+        />
+        <CardContent sx={{ flex: '1' }}>
+          <Typography variant="h4" gutterBottom>{movie.title}</Typography>
+          <Typography variant="subtitle1" gutterBottom>Release Date: {movie.release_date}</Typography>
+          <Typography variant="subtitle1" gutterBottom>Rating: {movie.vote_average}</Typography>
+          <Typography variant="body1" paragraph>{movie.overview}</Typography>
+          <Button variant="contained" component={Link} to="/home">Back to Trending Movies</Button>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
