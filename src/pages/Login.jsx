@@ -1,45 +1,51 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import React, { useState } from 'react'; // Import React and the useState hook for managing form state
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook for navigation after login
+import { Button, TextField, Container, Typography, Box } from '@mui/material'; // Import Material UI components
 
+// Login component
 const Login = () => {
-  const [username, setUsername] = useState('');
+  // State hooks to store the username and password entered by the user
+  const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
+  
+  // useNavigate hook from react-router-dom for navigating programmatically after login
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleLogin = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission behavior
+    // Check if both fields are filled
     if (username && password) {
-      localStorage.setItem('username', username);
-      navigate('/home'); // Redirect to home page
+      localStorage.setItem('username', username); // Save username in local storage (this is just for demo purposes)
+      navigate('/home'); // Navigate to the home page after successful login
     } else {
-      alert('Please enter both username and password');
+      alert('Please enter both username and password'); // Alert if either field is empty
     }
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ mt: 8, p: 4, boxShadow: 3, borderRadius: 2 }}>
-        <Typography variant="h4" align="center" gutterBottom>
+    <Container maxWidth="xs"> {/* Material UI Container to center the form */}
+      <Box sx={{ mt: 8, p: 4, boxShadow: 3, borderRadius: 2 }}> {/* Box to style the form with padding, shadow, and rounded corners */}
+        <Typography variant="h4" align="center" gutterBottom> {/* Title of the form */}
           Login
         </Typography>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin}> {/* Form submission handler */}
           <TextField
-            label="Username"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="Username" // Label for the username input field
+            fullWidth // Make the input field full width
+            margin="normal" // Add margin around the input field
+            value={username} // Set the value of the input field to the username state
+            onChange={(e) => setUsername(e.target.value)} // Update the username state when user types
           />
           <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            label="Password" // Label for the password input field
+            type="password" // Hide the password input (mask text)
+            fullWidth // Make the input field full width
+            margin="normal" // Add margin around the input field
+            value={password} // Set the value of the input field to the password state
+            onChange={(e) => setPassword(e.target.value)} // Update the password state when user types
           />
-          <Button variant="contained" fullWidth type="submit" sx={{ mt: 2 }}>
+          <Button variant="contained" fullWidth type="submit" sx={{ mt: 2 }}> {/* Submit button */}
             Login
           </Button>
         </form>
@@ -48,4 +54,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login; // Export the Login component to be used elsewhere in the app
