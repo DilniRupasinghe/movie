@@ -1,13 +1,13 @@
 // Import necessary dependencies and components
-import React, { useContext, useState } from 'react';
-import { MovieContext } from '../context/MovieContext';  // ✅ Import MovieContext to access movie data and functions
+import React, { useContext } from 'react';
+import { MovieContext } from '../context/MovieContext';  // Import MovieContext to access movie data and functions
 import { Box, Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material'; // MUI components for styling
 import { Link } from 'react-router-dom'; // For navigation links
 import InfiniteScroll from 'react-infinite-scroll-component'; // For infinite scrolling functionality
 
 function TrendingMovies() {
   // Use the context to retrieve the movies array, setMovies function, fetchMoreMovies function, and hasMore flag
-  const { movies, setMovies, fetchMoreMovies, hasMore } = useContext(MovieContext);  // ✅ Extract from context
+  const { movies, fetchMoreMovies, hasMore } = useContext(MovieContext);  // Extract from context
 
   return (
     <Box sx={{ padding: 4 }}>

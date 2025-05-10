@@ -1,5 +1,5 @@
 import React from 'react'; // Import React
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import components for routing
+import { Routes, Route } from 'react-router-dom';
 import { MovieProvider } from './context/MovieContext'; // Import the MovieProvider to manage movie-related state
 import Navbar from './components/Navbar'; // Import the Navbar component
 import Home from './pages/Home'; // Import the Home page component
