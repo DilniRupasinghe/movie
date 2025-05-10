@@ -21,6 +21,9 @@ export const CustomThemeProvider = ({ children }) => {
       createTheme({
         palette: {
           mode,
+          background: {
+            default: mode === 'light' ? '#ffffff' : '#121212'
+          }
         },
       }),
     [mode]

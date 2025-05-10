@@ -8,11 +8,14 @@ import MovieDetailsPage from './pages/MovieDetailsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import Login from './pages/Login';
 import { CustomThemeProvider } from './context/ThemeContext';
+import { useTheme } from '@mui/material/styles';
 
 const App = () => {
+  const theme = useTheme();
 
   return (
-    <CustomThemeProvider>
+    <div style={{backgroundColor: theme.palette.background.default, minHeight: '100vh'}}>
+      <CustomThemeProvider>
       <MovieProvider>
         <Navbar />
         <Routes>
@@ -23,6 +26,8 @@ const App = () => {
         </Routes>
     </MovieProvider>
     </CustomThemeProvider>
+    </div>
+    
     
   );
 };

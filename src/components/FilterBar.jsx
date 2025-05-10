@@ -1,6 +1,6 @@
 // src/components/FilterBar.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import axios from 'axios';
 import { MovieContext } from '../context/MovieContext';
 
@@ -14,6 +14,7 @@ function FilterBar() {
   const [selectedRating, setSelectedRating] = useState('');
   const { setMovies } = useContext(MovieContext);
 
+  // fetch genres once
   useEffect(() => {
     axios
       .get(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}`)
@@ -23,6 +24,7 @@ function FilterBar() {
       .catch((err) => console.error('Error fetching genres:', err));
   }, []);
 
+  // fetch movies (with optional filters)
   const fetchFilteredMovies = async () => {
     let query = `${BASE_URL}/discover/movie?api_key=${API_KEY}`;
 
@@ -38,14 +40,46 @@ function FilterBar() {
     }
   };
 
+  // fetch default movies initially (no filter)
   useEffect(() => {
     fetchFilteredMovies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGenre, selectedYear, selectedRating]);
+  }, []);
+
+  // handler for reset
+  const handleReset = () => {
+    setSelectedGenre('');
+    setSelectedYear('');
+    setSelectedRating('');
+    fetchFilteredMovies(); // fetch movies with no filters
+  };
+
+  // reusable sx for FormControl
+  const formControlSx = {
+    minWidth: 120,
+    backgroundColor: 'background.paper',
+    border: '1px solid',
+    borderColor: 'divider',
+    borderRadius: 1,
+  };
 
   return (
-    <Box display="flex" justifyContent="center" gap={2} my={2}>
-      <FormControl sx={{ minWidth: 120 }}>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      gap={2}
+      my={2}
+      flexWrap="wrap"
+      p={2}
+      sx={{
+        backgroundColor: 'background.default',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+      }}
+    >
+      <FormControl sx={formControlSx}>
         <InputLabel>Genre</InputLabel>
         <Select
           value={selectedGenre}
@@ -61,7 +95,7 @@ function FilterBar() {
         </Select>
       </FormControl>
 
-      <FormControl sx={{ minWidth: 120 }}>
+      <FormControl sx={formControlSx}>
         <InputLabel>Year</InputLabel>
         <Select
           value={selectedYear}
@@ -70,12 +104,14 @@ function FilterBar() {
         >
           <MenuItem value="">All</MenuItem>
           {Array.from({ length: 26 }, (_, i) => 2025 - i).map((year) => (
-            <MenuItem key={year} value={year}>{year}</MenuItem>
+            <MenuItem key={year} value={year}>
+              {year}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
 
-      <FormControl sx={{ minWidth: 120 }}>
+      <FormControl sx={formControlSx}>
         <InputLabel>Rating</InputLabel>
         <Select
           value={selectedRating}
@@ -84,10 +120,22 @@ function FilterBar() {
         >
           <MenuItem value="">All</MenuItem>
           {[8, 7, 6, 5, 4, 3].map((rating) => (
-            <MenuItem key={rating} value={rating}>{rating}+</MenuItem>
+            <MenuItem key={rating} value={rating}>
+              {rating}+
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
+
+      {/* Button controls */}
+      <Box display="flex" gap={1}>
+        <Button variant="contained" color="primary" onClick={fetchFilteredMovies}>
+          Filter
+        </Button>
+        <Button variant="outlined" color="secondary" onClick={handleReset}>
+          Reset
+        </Button>
+      </Box>
     </Box>
   );
 }

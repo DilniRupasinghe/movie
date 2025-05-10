@@ -41,17 +41,17 @@ export const MovieProvider = ({ children }) => {
   };
 
   // 🔥 start new search (reset state)
-  const searchMovies = (query) => {
+  const searchMovies = async (query) => {
     if (!query.trim()) return;
     setSearchQuery(query);
     setIsSearchActive(true);
     setMovies([]); // clear previous results
     setPage(1);
     setHasMore(true);
+    await fetchMoreMovies();
     saveLastSearchedMovie(query);
     // fetch first search page
     // ❗️don't await → let `fetchMoreMovies` handle
-    fetchMoreMovies();
   };
 
   // 🔥 clear search → return to trending
