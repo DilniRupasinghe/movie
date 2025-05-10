@@ -69,7 +69,7 @@ function FilterBar() {
           onChange={(e) => setSelectedYear(e.target.value)}
         >
           <MenuItem value="">All</MenuItem>
-          {Array.from({ length: 24 }, (_, i) => 2023 - i).map((year) => (
+          {Array.from({ length: 26 }, (_, i) => 2025 - i).map((year) => (
             <MenuItem key={year} value={year}>{year}</MenuItem>
           ))}
         </Select>

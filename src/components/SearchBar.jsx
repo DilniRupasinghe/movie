@@ -1,30 +1,24 @@
+// SearchBar.jsx
 import React, { useState, useContext } from 'react';
 import { TextField, Button, Box, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useTheme } from '@mui/material/styles';
-import axios from 'axios';
-import { MovieContext } from '../context/MovieContext';  // ✅ import MovieContext
+import { MovieContext } from '../context/MovieContext';
 
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-const BASE_URL = 'https://api.themoviedb.org/3';
-
-function SearchBar({ onSearch }) {
+function SearchBar() {
   const [query, setQuery] = useState('');
   const theme = useTheme();
 
-  const { setMovies, saveLastSearchedMovie } = useContext(MovieContext); // ✅ use context
+  const { searchMovies, clearSearch, isSearchActive } = useContext(MovieContext);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!query.trim()) return;
+    searchMovies(query);
+  };
 
-    try {
-      const res = await axios.get(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`);
-      setMovies(res.data.results);  // ✅ update movie list in context
-      saveLastSearchedMovie(query); // ✅ save last searched query
-      if (onSearch) onSearch(query); // optional callback
-    } catch (err) {
-      console.error('Error searching movies:', err);
-    }
+  const handleClear = () => {
+    setQuery('');
+    clearSearch();
   };
 
   return (
@@ -46,9 +40,7 @@ function SearchBar({ onSearch }) {
             '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
           },
         }}
-        InputLabelProps={{
-          style: { color: theme.palette.text.primary },
-        }}
+        InputLabelProps={{ style: { color: theme.palette.text.primary } }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -57,12 +49,17 @@ function SearchBar({ onSearch }) {
           ),
         }}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') handleSearch(); // Optional: search on Enter key
+          if (e.key === 'Enter') handleSearch();
         }}
       />
       <Button variant="contained" onClick={handleSearch}>
         Search
       </Button>
+      {isSearchActive && (
+        <Button variant="outlined" onClick={handleClear} sx={{ ml: 2 }}>
+          Clear
+        </Button>
+      )}
     </Box>
   );
 }

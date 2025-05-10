@@ -1,30 +1,87 @@
+// MovieContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const MovieContext = createContext();
 
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
+
 export const MovieProvider = ({ children }) => {
-  const [movies, setMovies] = useState([]);  // trending/search results
+  const [movies, setMovies] = useState([]); // trending or search results
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [favorites, setFavorites] = useState([]);
   const [lastSearchedMovie, setLastSearchedMovie] = useState('');
 
-  // Load favorites and last search from localStorage
+  // 🔥 fetch more movies (either trending or search)
+  const fetchMoreMovies = async () => {
+    try {
+      const endpoint = isSearchActive
+        ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(searchQuery)}&page=${page}`
+        : `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`;
+
+      console.log(`Fetching ${isSearchActive ? 'search' : 'trending'} page: ${page}`);
+
+      const response = await axios.get(endpoint);
+      const newMovies = response.data.results;
+
+      if (newMovies.length === 0) {
+        setHasMore(false);
+      } else {
+        setMovies((prev) => [...prev, ...newMovies]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    } catch (err) {
+      console.error('Error fetching movies:', err);
+    }
+  };
+
+  // 🔥 start new search (reset state)
+  const searchMovies = (query) => {
+    if (!query.trim()) return;
+    setSearchQuery(query);
+    setIsSearchActive(true);
+    setMovies([]); // clear previous results
+    setPage(1);
+    setHasMore(true);
+    saveLastSearchedMovie(query);
+    // fetch first search page
+    // ❗️don't await → let `fetchMoreMovies` handle
+    fetchMoreMovies();
+  };
+
+  // 🔥 clear search → return to trending
+  const clearSearch = () => {
+    setIsSearchActive(false);
+    setSearchQuery('');
+    setMovies([]);
+    setPage(1);
+    setHasMore(true);
+    fetchMoreMovies();
+  };
+
+  // 🔥 load trending on first mount
+  useEffect(() => {
+    fetchMoreMovies();
+  }, []);
+
+  // load favorites & last search
   useEffect(() => {
     const storedFavorites = localStorage.getItem('favorites');
     const storedLastSearch = localStorage.getItem('lastSearchedMovie');
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
-    }
-    if (storedLastSearch) {
-      setLastSearchedMovie(storedLastSearch);
-    }
+    if (storedFavorites) setFavorites(JSON.parse(storedFavorites));
+    if (storedLastSearch) setLastSearchedMovie(storedLastSearch);
   }, []);
 
-  // Persist favorites to localStorage whenever they change
+  // save favorites
   useEffect(() => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Persist last searched movie
   const saveLastSearchedMovie = (movieTitle) => {
     setLastSearchedMovie(movieTitle);
     localStorage.setItem('lastSearchedMovie', movieTitle);
@@ -40,21 +97,24 @@ export const MovieProvider = ({ children }) => {
     setFavorites(favorites.filter((fav) => fav.id !== movieId));
   };
 
-  const isFavorite = (movieId) => {
-    return favorites.some((fav) => fav.id === movieId);
-  };
+  const isFavorite = (movieId) => favorites.some((fav) => fav.id === movieId);
 
   return (
     <MovieContext.Provider
       value={{
         movies,
         setMovies,
+        fetchMoreMovies,
+        hasMore,
         favorites,
         addFavorite,
         removeFavorite,
         isFavorite,
         lastSearchedMovie,
         saveLastSearchedMovie,
+        isSearchActive,
+        searchMovies,
+        clearSearch,
       }}
     >
       {children}
